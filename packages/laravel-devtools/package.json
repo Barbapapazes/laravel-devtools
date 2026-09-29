@@ -1,6 +1,6 @@
 {
     "name": "@barbapapazes/laravel-devtools",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "Laravel route and model inspectors for Devtools",
     "license": "MIT",
     "repository": {
@@ -52,6 +52,7 @@
         "./package.json": "./package.json"
     },
     "files": [
+        "README.md",
         "dist/node",
         "dist/client",
         "dist/models-client"

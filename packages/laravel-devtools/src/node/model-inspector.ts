@@ -7,7 +7,7 @@ export function createModelInspector({ backendUrl = process.env.LARAVEL_URL ?? '
         id: 'model-inspector',
         name: 'Model Inspector',
         icon: 'lucide:database',
-        version: '0.1.0',
+        version: '0.1.2',
         packageName: '@barbapapazes/laravel-devtools',
         description: 'Inspect Laravel Eloquent models.',
         homepage: 'https://devfra.me/',

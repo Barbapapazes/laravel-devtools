@@ -1,58 +1,53 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Devtools
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Inspect registered Laravel routes and Eloquent models from Vite DevTools or Nuxt DevTools. This repository contains the npm integration, a Laravel package that serves the inspector data, and local playgrounds.
 
-## About Laravel
+## Packages
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Package | Purpose |
+| --- | --- |
+| [`@barbapapazes/laravel-devtools`](packages/laravel-devtools/README.md) | Vite and Nuxt integrations with Route Inspector and Model Inspector panels. |
+| [`barbapapazes/laravel-devtools`](packages/laravel-devtools-php/README.md) | Laravel endpoints that provide the route and model data in local environments. |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Install both packages in your Laravel project (and its Vite or Nuxt frontend):
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```sh
+composer require --dev barbapapazes/laravel-devtools
+pnpm add -D @barbapapazes/laravel-devtools
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+In `vite.config.ts`, add the plugin to your existing Vite plugins:
 
-## Contributing
+```ts
+import { defineConfig } from 'vite'
+import laravelDevtools from '@barbapapazes/laravel-devtools/vite'
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+export default defineConfig({
+  devtools: { apply: 'serve' },
+  plugins: [laravelDevtools()],
+})
+```
 
-## Code of Conduct
+For Nuxt, add `@barbapapazes/laravel-devtools/nuxt` to `modules` in `nuxt.config.ts` and enable Nuxt DevTools. See the [npm package README](packages/laravel-devtools/README.md) for Nuxt configuration and backend URL options. The Laravel feeds are available only when the Laravel app runs in its `local` environment. Start Laravel and the frontend development server, then open the Laravel group in DevTools.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Develop locally
 
-## Security Vulnerabilities
+The root Laravel app is the Vite playground. Install the root Composer and pnpm dependencies, configure `.env` from `.env.example`, then run the backend and frontend development servers:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```sh
+composer install
+pnpm install
+pnpm dev
+```
 
-## License
+In another terminal:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```sh
+php artisan serve --host=127.0.0.1 --port=8000
+```
+
+The [Nuxt playground](playgrounds/nuxt/README.md) runs separately on port 3000. Both playgrounds use the local packages in this repository rather than registry releases.
+
+## Releasing
+
+The [publish workflow](.github/workflows/publish.yml) runs on a `vX.Y.Z` tag. It checks the npm version, tests and builds the packages, pushes a split of the PHP package to [`barbapapazes/laravel-devtools-php`](https://github.com/Barbapapazes/laravel-devtools-php), and publishes the npm package. Configure npm trusted publishing for this repository and `PHP_SPLIT_TOKEN` with write access to the PHP repository before tagging. The split repository's tags are used for Composer/Packagist releases.
