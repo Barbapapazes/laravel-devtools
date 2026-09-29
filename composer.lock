@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bf629dcdfbe1d7325508488c2a5dc12",
+    "content-hash": "f17c8bc57e82f2983099a3c9f6ae0d6e",
     "packages": [
+        {
+            "name": "barbapapazes/laravel-devtools",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "packages/laravel-devtools-php",
+                "reference": "523ae4aaa9c20e9e743c72f299bc5a3a9d42d5e3"
+            },
+            "require": {
+                "illuminate/database": "^13.0",
+                "illuminate/filesystem": "^13.0",
+                "illuminate/http": "^13.0",
+                "illuminate/routing": "^13.0",
+                "illuminate/support": "^13.0",
+                "php": "^8.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Devtools\\LaravelDevtools\\Laravel\\LaravelDevtoolsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Devtools\\LaravelDevtools\\Laravel\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Laravel feeds for the route and model inspector devtools",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
         {
             "name": "brick/math",
             "version": "1.0.0",
@@ -139,44 +177,6 @@
                 }
             ],
             "time": "2026-09-06T14:11:38+00:00"
-        },
-        {
-            "name": "devtools/laravel-devtools",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "packages/laravel-devtools-php",
-                "reference": "7be9aa5201eeb79c9e362e7dd4dd545ede3e625e"
-            },
-            "require": {
-                "illuminate/database": "^13.0",
-                "illuminate/filesystem": "^13.0",
-                "illuminate/http": "^13.0",
-                "illuminate/routing": "^13.0",
-                "illuminate/support": "^13.0",
-                "php": "^8.3"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Devtools\\LaravelDevtools\\Laravel\\LaravelDevtoolsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Devtools\\LaravelDevtools\\Laravel\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "description": "Laravel feeds for the route and model inspector devtools",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
         },
         {
             "name": "dflydev/dot-access-data",
@@ -10061,7 +10061,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "devtools/laravel-devtools": 20
+        "barbapapazes/laravel-devtools": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

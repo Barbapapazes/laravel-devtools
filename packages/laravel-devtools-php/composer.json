@@ -1,5 +1,5 @@
 {
-    "name": "devtools/laravel-devtools",
+    "name": "barbapapazes/laravel-devtools",
     "description": "Laravel feeds for the route and model inspector devtools",
     "type": "library",
     "license": "MIT",
