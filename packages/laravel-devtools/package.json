@@ -1,0 +1,85 @@
+{
+    "name": "@barbapapazes/laravel-devtools",
+    "version": "0.1.0",
+    "description": "Laravel route and model inspectors for Devtools",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/barbapapazes/laravel-devtools.git",
+        "directory": "packages/laravel-devtools"
+    },
+    "type": "module",
+    "publishConfig": {
+        "access": "public"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/node/laravel-devtools.d.ts",
+            "default": "./dist/node/laravel-devtools.js"
+        },
+        "./vite": {
+            "types": "./dist/node/vite-plugin.d.ts",
+            "default": "./dist/node/vite-plugin.js"
+        },
+        "./nuxt": {
+            "types": "./dist/node/nuxt-module.d.ts",
+            "default": "./dist/node/nuxt-module.js"
+        },
+        "./routes": {
+            "types": "./dist/node/routes.d.ts",
+            "default": "./dist/node/routes.js"
+        },
+        "./routes/inspector": {
+            "types": "./dist/node/route-inspector.d.ts",
+            "default": "./dist/node/route-inspector.js"
+        },
+        "./routes/vite": {
+            "types": "./dist/node/route-vite-plugin.d.ts",
+            "default": "./dist/node/route-vite-plugin.js"
+        },
+        "./models": {
+            "types": "./dist/node/model-inspector.d.ts",
+            "default": "./dist/node/model-inspector.js"
+        },
+        "./models/vite": {
+            "types": "./dist/node/model-vite-plugin.d.ts",
+            "default": "./dist/node/model-vite-plugin.js"
+        },
+        "./models/feed": {
+            "types": "./dist/node/models.d.ts",
+            "default": "./dist/node/models.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist/node",
+        "dist/client",
+        "dist/models-client"
+    ],
+    "scripts": {
+        "build": "pnpm build:node && vite build --config vite.config.ts && vite build --config vite.models.config.ts",
+        "build:node": "tsc -p tsconfig.node.json",
+        "prepack": "pnpm build",
+        "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
+        "dev": "vite build --watch --config vite.config.ts",
+        "dev:models": "vite build --watch --config vite.models.config.ts",
+        "dev:node": "tsc -w -p tsconfig.node.json"
+    },
+    "dependencies": {
+        "@nuxt/devtools-kit": "^4.0.0-beta.2",
+        "@nuxt/kit": "^4.5.2",
+        "@vitejs/devtools-kit": "^0.7.6",
+        "devframe": "^1.0.0",
+        "vue": "^3.0.0"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.3.3",
+        "@types/node": "^26.6.3",
+        "@vitejs/plugin-vue": "^6.0.0",
+        "nuxt": "^4.5.2",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^5.9.3",
+        "vite": "^8.0.0",
+        "vue-tsc": "^3.3.11"
+    }
+}

@@ -1,0 +1,113 @@
+name: Publish packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-packages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release commit with full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Verify release versions
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo 'Expected a tag such as v0.1.0' >&2
+            exit 1
+          fi
+          npm_version="$(node -p 'require("./packages/laravel-devtools/package.json").version')"
+          if [[ "$version" != "$npm_version" ]]; then
+            echo "Tag version $version does not match npm package version $npm_version" >&2
+            exit 1
+          fi
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate Composer package
+        run: composer validate --working-dir=packages/laravel-devtools-php --strict
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Test PHP package feeds
+        run: php artisan test --compact tests/Feature/RouteInspectorApiTest.php tests/Feature/ModelInspectorApiTest.php
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: '10.34.5'
+          run_install: false
+
+      - name: Install locked npm dependencies
+        working-directory: packages/laravel-devtools
+        run: pnpm install --frozen-lockfile
+
+      - name: Check types and build npm package
+        working-directory: packages/laravel-devtools
+        run: |
+          pnpm typecheck
+          pnpm build
+
+      - name: Set up npm trusted publishing
+        run: npm install --global npm@11
+
+      - name: Split PHP package and push release tag
+        env:
+          RELEASE_TOKEN: ${{ secrets.PHP_SPLIT_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          TARGET_REPOSITORY: barbapapazes/laravel-devtools-php
+        run: |
+          set -euo pipefail
+          if [[ -z "$RELEASE_TOKEN" ]]; then
+            echo 'Set PHP_SPLIT_TOKEN with Contents: Read and write access to the PHP repository.' >&2
+            exit 1
+          fi
+          split_sha="$(git subtree split --prefix=packages/laravel-devtools-php "$GITHUB_SHA")"
+          remote="https://x-access-token:${RELEASE_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+
+          # Never overwrite an existing release tag with a different commit.
+          existing_sha="$(git ls-remote "$remote" "refs/tags/${RELEASE_TAG}")"
+          if [[ -n "$existing_sha" ]]; then
+            if [[ "${existing_sha%%$'\t'*}" == "$split_sha" ]]; then
+              echo "$RELEASE_TAG already points to this package snapshot."
+            else
+              echo "$RELEASE_TAG already exists and points elsewhere." >&2
+              exit 1
+            fi
+          else
+            git push "$remote" "$split_sha:refs/heads/main"
+            git push "$remote" "$split_sha:refs/tags/${RELEASE_TAG}"
+          fi
+
+      - name: Publish npm package with trusted publishing
+        working-directory: packages/laravel-devtools
+        run: npm publish --access public --ignore-scripts

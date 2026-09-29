@@ -1,0 +1,1 @@
+// Application TypeScript entry point.
